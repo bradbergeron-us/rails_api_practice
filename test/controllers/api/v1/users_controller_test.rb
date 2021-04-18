@@ -40,6 +40,13 @@ class Api::V1::UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  test "should forbid destroy user because JWT is invalid" do
+    assert_no_difference('User.count') do
+      delete api_v1_user_url(@user), headers: { Authorization: JWT.encode({user_id: @user.id}, 'bad_signature' ) }, as: :json
+    end
+    assert_response :forbidden
+  end
+
   test "should destroy user" do
     assert_difference('User.count', -1) do
       delete api_v1_user_url(@user), headers: { Authorization: JsonWebToken.encode(user_id: @user.id) }, as: :json
