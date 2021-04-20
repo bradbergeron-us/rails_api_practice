@@ -26,4 +26,11 @@ setup do
       @order.save
     end
   end
+
+  test "An order should not claim too much product then available" do
+    @order.placements << Placement.new(
+      product_id: @product1.id, quantity: (1 + @product1.quantity)
+    )
+    assert_not @order.valid?
+  end
 end
